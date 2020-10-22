@@ -8,6 +8,7 @@ L1B ASTER scenes downloaded from NASA's EarthData portal contain two files:
 2. A scene metadata file (.met)
 
 Unzip the zipped file to a working folder and drop the scene metadata file within this folder.
+
 *NOTE: THERE SHOULD ONLY BE ONE SCENE PER FOLDER*
 
 To process this scene, point the script at the working folder.
