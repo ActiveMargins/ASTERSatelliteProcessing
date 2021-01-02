@@ -64,6 +64,7 @@ Thie fucntion creates a plot of desired spectra from an ASTER library object (de
 **Inputs**
 
 lib_obj  -  An ASTER library object (a dataframe formated similar to the above)
+
 offset=FALSE  -  A boolen argument that specifies if the spectra should be overlapping/not offset. It is common for spectra to be offset. If offset = FALSE, the plot will be reflectance vs. wavelength. If offset=TRUE, then it will be Ref_offset vs. wavelength. 
 
 **Outputs**
@@ -79,9 +80,11 @@ This function performs a spectral angle mapper classification for input spectra.
 **Inputs**
 
 lib_obj  - An ASTER library object (a dataframe formated similar to the above)
+
 input_scene_spectra - a 1D vector of reflectance values (ordered 1-9).
 
 **Outputs**
+
 A list containing two parts:
 1. A dataframe that descibes the spectral angle between the minerals within the library object and the input spectra
 2. A a classification (i.e., the mineral with the smallest angle)
