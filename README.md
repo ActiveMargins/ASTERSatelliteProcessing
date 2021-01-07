@@ -8,6 +8,9 @@ The ASTER sensor is quite important for geologic mapping as the range of wavelen
 ### THE ASTER LIBRARY
 The ASTER Library is one of the strengths of the ASTER/TERRA platform. A duplicate sensor has beeen used by  NASA to collect reflectance spectra profiles samples of vegetation, soil, man-made materials, and minerals. This allows for simple classfication methods to be used for mapping ASTER scenes. The ASTER library comes in the form of numerous .txt files. In the case of minerals, multiple example of each mineral (e.g., albite) have been measured. Each record is an individual .txt file that with one header line that contains the record number, the mineral name, and sample name. The reflectance in the first 9 bands (SWIR and NIR) are individual rows. Thermal bands (10-14) are excluded in the library.
 
+<p align="center">
+  <img width="1248" height="262" src="https://github.com/ActiveMargins/FossilMapWebScraping/blob/main/images/ExampleMaps.jpg">
+</p>
 
 ### FUNCTIONS
 
