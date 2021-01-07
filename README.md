@@ -1,4 +1,7 @@
-## ASTER Handling Functions - by D.Coutts
+## ASTER Handling Functions
+
+This project was an attempt to work on functional scoping, the details of the ASTER sensor, and geospatial techniques in R. 
+
 
 ### THE ASTER SENSOR
 The [Advanced Spaceborne Thermal Emissions and Reflection Radiometer (ASTER)](https://asterweb.jpl.nasa.gov/) onboard the TERRA satellite produces visible near infrared (VNIR), shortwave infrared (SWIR), and thermal infrared (TIR) that, among other uses, is commonly used for geological mapping. This repository contains functions that I use to process and interpret ASTER data (freely available from NASA). I've tried to write the functions to use a few packages as possible, but I incorporate terra and ggplot2. Most importantly I use the [terra package](https://rspatial.org/terra/pkg/index.html) to handle rasters and perform some calculations. 
@@ -9,12 +12,12 @@ The ASTER sensor is quite important for geologic mapping as the range of wavelen
 The ASTER Library is one of the strengths of the ASTER/TERRA platform. A duplicate sensor has beeen used by  NASA to collect reflectance spectra profiles samples of vegetation, soil, man-made materials, and minerals. This allows for simple classfication methods to be used for mapping ASTER scenes. The ASTER library comes in the form of numerous .txt files. In the case of minerals, multiple example of each mineral (e.g., albite) have been measured. Each record is an individual .txt file that with one header line that contains the record number, the mineral name, and sample name. The reflectance in the first 9 bands (SWIR and NIR) are individual rows. Thermal bands (10-14) are excluded in the library.
 
 <p align="center">
-  <img width="1248" height="262" src="https://github.com/ActiveMargins/FossilMapWebScraping/blob/main/images/ExampleMaps.jpg">
+  <img width="1000" height="525" src="https://github.com/ActiveMargins/ASTERSatelliteProcessing/blob/master/images/ASTER_workflow.png">
 </p>
 
 ### FUNCTIONS
 
-### L1B_to_TOA(scene_loc,save=FALSE,save_loc=NULL)
+### 1) L1B_to_TOA(scene_loc,save=FALSE,save_loc=NULL)
 
 **Description**
 
@@ -38,7 +41,84 @@ Unzip the zipped file to a working folder and drop the scene metadata file withi
 
 The output of this function is a single raster stack object (object class outlined in the terra package) consisting of a raster for each band. The data will be processed to TOA reflectance.
 
-### assemble_ASTER_lib(ASTER_lib_folder)
+### 2) folder_to_stack(scene_loc)
+
+**Description**
+
+This function loads procssed .tifs files (TOA reflectance) and compiles them into a raster stack (as per terra). 
+
+**Inputs**
+
+scene_loc  -  A folder location for processed ASTER .tifs. It's best if these have the same naming as when they are saved by L1B_to_TOA(). The minimum requirement is that the final characters in the file names are the band numbers separated from the scene number by an underscore.
+
+**Outputs**
+
+The output is a raster stack.
+
+### 3) create_cover_mask(stack,calc_NDVI=FALSE,NDVI_value=NULL,calc_NSDI=FALSE,NSDI_value=NULL)
+
+**Description**
+
+This function creates a binary raster that will be used to mask other rasters. The mask is used mask vegetation and snow.
+
+**Inputs**
+
+stack  -  a processed raster stack
+calc_NDVI=FALSE  -  boolean to specify if NDVI should be included in the mask.
+NDVI_value=NULL  -  NDVI values used to threshold vegetation/non-vegetation. 0.3 is a traditional value.
+calc_NDSI=FALSE  -  boolean to specify if NDSI should be included in the mask.
+NDSI_value=NULL  -  NDSI value used to threshold snow/non-snow. 0.4 is a traditional value. 
+
+**Outputs**
+
+A single raster that can be used to mask indices or ASTER bands. Areas of ground cover (vegetation and snow) have values of 0, while areas of exposed rock have a value of 1.
+
+### 4) calculate_indices(stack, outliers.rm=TRUE)
+
+**Description**
+
+This function calculates numerous indicies that can be used to map exposed bedrock. The mineral/alteration indicies are well explained in the code.
+
+**Inputs**
+
+stack  -  a processed raster stack (TOA reflectance)
+outliers.rm=TRUE  -  boolean to discern whether outliers should be removed. In some cases there are index values that are calculated that are not representative of the geology. Largely occuring in the margins of the scene.  
+
+**Outputs**
+
+This function creates numerous rasters in the global environment and may challenge the ram of your workstation...
+
+### 5) mask_raster(raster, cover_mask)
+
+**Description**
+
+This function applies a mask an input raster.
+
+**Inputs**
+
+raster  -  input single raster (e.g., index) or satck of multiple rasters
+cover_mask  -  cover mask generated through the create_cover_mask() function.
+
+**Outputs**
+
+A raster that has been masked by the binary mask.
+
+### 6) raster_PCA(stack)
+
+**Description**
+
+This function performs PCA on a raster stack. Only the first three components are computed.
+
+**Inputs**
+
+stack  -  a raster stack
+
+**Outputs**
+
+An PCA object. Individual principle components can be accessed through "object$PC1" through "object$PC3". Individual principle components can be plotted by "plot(object$PC1)". RGB can be plotted through "plotRGB(object)".
+
+
+### 7) assemble_ASTER_lib(ASTER_lib_folder)
 
 **Description**
 
@@ -58,7 +138,7 @@ The output of this function is a single tidy dataframe the lists the reflectance
 | 0.51193970  | Actinolite | 2    | 0.660      | 0.5119397  |
 | ...         | ...        | ...  | ...        | ...        |
 
-### plot_ASTER_lib(lib_obj, offset=FALSE)
+### 8) plot_ASTER_lib(lib_obj, offset=FALSE)
 
 **Description**
 
@@ -74,7 +154,7 @@ offset=FALSE  -  A boolen argument that specifies if the spectra should be overl
 
 This function creates a single ggplot for all the mineral species that are within the ASTER library object. Lines will be coloured by mineral. 
 
-### SAM(lib_obj, input_scene_spectra)
+### 9) SAM(lib_obj, input_scene_spectra)
 
 **Description**
 
